@@ -6,6 +6,8 @@ Me and a hacker have decided to go for our Hack The Box CPTS certification. Welc
 ## Getting Started 
 Section 7 Service Scanning box
 
+Try to identify the services running on the server above, and then try to search to find public exploits to exploit them. Once you do, try to get the content of the '/flag.txt' file. (note: the web server may take a few seconds to start)
+
 ~~~
 ➜  ~ nmap 154.57.164.68  
 Starting Nmap 7.99 ( https://nmap.org ) at 2026-05-12 14:04 -0600
@@ -1017,4 +1019,46 @@ PORT      STATE SERVICE
 Nmap done: 1 IP address (1 host up) scanned in 35.79 seconds
 ~~~
 
-Why is this box so open?
+Why is this box so open? Lets try a more targeted approach with our Wordpress server we know that exists on port 32237: 
+
+~~~
+➜  ~ nmap -sV -p 32237 154.57.164.68
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-05-12 14:11 -0600
+Nmap scan report for 154-57-164-68.static.isp.htb.systems (154.57.164.68)
+Host is up (0.12s latency).
+
+PORT      STATE SERVICE VERSION
+32237/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 15.34 seconds
+~~~
+
+Apache 2.4.41...we can work with that. 
+
+~~~
+➜  ~ searchsploit apache 2.4.41
+---------------------------------------------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                                                        |  Path
+---------------------------------------------------------------------------------------------------------------------- ---------------------------------
+Apache + PHP < 5.3.12 / < 5.4.2 - cgi-bin Remote Code Execution                                                       | php/remote/29290.c
+Apache + PHP < 5.3.12 / < 5.4.2 - Remote Code Execution + Scanner                                                     | php/remote/29316.py
+Apache CXF < 2.5.10/2.6.7/2.7.4 - Denial of Service                                                                   | multiple/dos/26710.txt
+Apache mod_ssl < 2.8.7 OpenSSL - 'OpenFuck.c' Remote Buffer Overflow                                                  | unix/remote/21671.c
+Apache mod_ssl < 2.8.7 OpenSSL - 'OpenFuckV2.c' Remote Buffer Overflow (1)                                            | unix/remote/764.c
+Apache mod_ssl < 2.8.7 OpenSSL - 'OpenFuckV2.c' Remote Buffer Overflow (2)                                            | unix/remote/47080.c
+Apache OpenMeetings 1.9.x < 3.1.0 - '.ZIP' File Directory Traversal                                                   | linux/webapps/39642.txt
+Apache Tomcat < 5.5.17 - Remote Directory Listing                                                                     | multiple/remote/2061.txt
+Apache Tomcat < 6.0.18 - 'utf8' Directory Traversal                                                                   | unix/remote/14489.c
+Apache Tomcat < 6.0.18 - 'utf8' Directory Traversal (PoC)                                                             | multiple/remote/6229.txt
+Apache Tomcat < 9.0.1 (Beta) / < 8.5.23 / < 8.0.47 / < 7.0.8 - JSP Upload Bypass / Remote Code Execution (1)          | windows/webapps/42953.txt
+Apache Tomcat < 9.0.1 (Beta) / < 8.5.23 / < 8.0.47 / < 7.0.8 - JSP Upload Bypass / Remote Code Execution (2)          | jsp/webapps/42966.py
+Apache Xerces-C XML Parser < 3.1.2 - Denial of Service (PoC)                                                          | linux/dos/36906.txt
+Webfroot Shoutbox < 2.32 (Apache) - Local File Inclusion / Remote Code Execution                                      | linux/remote/34.pl
+---------------------------------------------------------------------------------------------------------------------- ---------------------------------
+Shellcodes: No Results
+~~~
+
+
+Since we know the flag exists on the system and we are suggested to use public exploits, lets fire up metasploit and action searchsploit results
+
