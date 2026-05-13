@@ -3,13 +3,12 @@
 Me and a hacker have decided to go for our Hack The Box CPTS certification. Welcome to our journey
 
 
-## Getting Started 
-### Section 7 Service Scanning box
+## Section 8 Service Scanning box
 
 Flag: Try to identify the services running on the server above, and then try to search to find public exploits to exploit them. Once you do, try to get the content of the '/flag.txt' file. (note: the web server may take a few seconds to start)
 
 
-## Service Enumeration
+### Service Enumeration
 IP: http://154.57.164.72:31179/
 
 Navigating to that IP/port shows us the following:
@@ -20,7 +19,7 @@ Navigating to that IP/port shows us the following:
 Nice information disclosure, one of my favorite and most common pentest findings. I use AI to find the `auxiliary/scanner/http/wp_simple_backup_file_read` metasploit module
 
 
-## metasploit
+### metasploit
 
 ~~~
 msf auxiliary(scanner/http/wordpress_scanner) > use auxiliary/scanner/http/wp_simple_backup_file_read
@@ -57,3 +56,4 @@ HTB{REDACTED}
 ~~~
 
 Done :) 
+
