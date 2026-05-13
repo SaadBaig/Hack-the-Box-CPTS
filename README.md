@@ -231,7 +231,11 @@ View page source:
 
 Flag: HTB{REDACTED}
 
-## Section 10 Types of Shells
+## Section 11 
+
+_Flag1: SSH into the server above with the provided credentials, and use the '-p xxxxxx' to specify the port shown above. Once you login, try to find a way to move to 'user2', to get the flag in '/home/user2/flag.txt'._
+
+
 
 
 
