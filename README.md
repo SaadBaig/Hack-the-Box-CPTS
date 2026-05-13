@@ -13,7 +13,7 @@ IP: http://154.57.164.72:31179/
 
 Navigating to that IP/port shows us the following:
 
-![alt text](images/section7box.png)
+![alt text](images/section8box.png)
 
 
 Nice information disclosure, one of my favorite and most common pentest findings. I use AI to find the `auxiliary/scanner/http/wp_simple_backup_file_read` metasploit module
@@ -56,4 +56,182 @@ HTB{REDACTED}
 ~~~
 
 Done :) 
+
+## Section 9 Web Enumeration
+
+This section talked about finding public exploits by google *technology name* + exploit. It also talked about searchsploit and metasploit. 
+
+
+_Flag: Try to identify the services running on the server above, and then try to search to find public exploits to exploit them. Once you do, try to get the content of the '/flag.txt' file. (note: the web server may take a few seconds to start)_
+
+
+### nmap 
+~~~
+➜  ~ nmap -sV -p 30764 154.57.164.63
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-05-13 14:04 -0600
+Nmap scan report for 154-57-164-63.static.isp.htb.systems (154.57.164.63)
+Host is up (0.078s latency).
+
+PORT      STATE SERVICE VERSION
+30764/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+~~~
+
+Going to the web server, I get greeted with this 
+
+![alt text](images/Section9.png)
+
+I inspect the webpage:
+
+~~~</html>
+<!DOCTYPE html>
+
+<head>
+    <title>HTB Academy</title>
+    <style>
+        *,
+        html {
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: rgb(42, 48, 66);
+        }
+
+        .center {
+            width: 100%;
+            height: 50%;
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: "Helvetica", Helvetica, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 144px;
+        }
+
+        p {
+            font-size: 64px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="center">
+        <h1>Welcome to HTB Academy Blog</h1>
+    </div>
+</body>
+
+</html>
+~~~
+
+
+I try `robots.txt`:
+
+http://154.57.164.63:30764/robots.txt
+
+```
+User-agent: *
+Disallow: /admin-login-page.php
+````
+
+You disallow robots, but not humans; lets check it out
+
+![alt text](images/2.png)
+
+View page source:
+
+~~~
+<!DOCTYPE html>
+<html>
+<style>
+    body {
+        background-color: #151D2B;
+    }
+
+    form {
+        background-color: #1A2332;
+        width: 25%;
+        margin: auto;
+        border-radius: 10px;
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    input[type=text],
+    input[type=password] {
+        background-color: #101927;
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #101927;
+        box-sizing: border-box;
+        border-radius: 10px;
+        color: white;
+    }
+
+    button {
+        background-color: #2A86FF;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        border-radius: 10px;
+    }
+
+    button:hover {
+        opacity: 0.8;
+    }
+
+    .container {
+        padding: 16px;
+    }
+</style>
+
+<body>
+                <form name='login' autocomplete='off' class='form' action='' method='post'>
+            <div class='control'>
+                <h1>
+                    Admin Panel
+                </h1>
+            </div>
+            <div class="container">
+                <label for="username"><b>Username</b></label>
+                <input name='username' placeholder='Username' type='text'>
+
+                <label for="password"><b>Password</b></label>
+                <input name='password' placeholder='Password' type='password'>
+
+                <!-- TODO: remove test credentials admin:password123 -->
+
+                <button type="submit" formmethod='post'>Login</button>
+            </div>
+        </form>
+    </body>
+
+</html>
+~~~
+
+Flag: HTB{REDACTED}
+
+## Section 10 Types of Shells
+
+
 
