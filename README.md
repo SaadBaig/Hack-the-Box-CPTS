@@ -2,6 +2,12 @@
 
 Two hackers working toward the **Hack The Box Certified Penetration Testing Specialist (CPTS)** certification. This repo documents our progress, methodology, and flags along the way.
 
+## Table of Contents
+
+- [Section 8 — Service Scanning](#-section-8--service-scanning)
+- [Section 9 — Web Enumeration](#-section-9--web-enumeration)
+- [Section 11 — Privilege Escalation](#-section-11--privilege-escalation)
+
 ---
 
 ## 📦 Section 8 — Service Scanning
@@ -12,7 +18,7 @@ Two hackers working toward the **Hack The Box Certified Penetration Testing Spec
 
 **Target:** `http://154.57.164.72:31179/`
 
-Navigating to the target reveals an information disclosure — one of the most common (and favorite) pentest findings:
+Navigating to the target reveals an information disclosure — one of my most favorite (and common) pentest findings:
 
 ![Service Scanning - Information Disclosure](images/section8box.png)
 
@@ -143,3 +149,5 @@ HTB{REDACTED}
 ```
 
 ✅ **Flag captured.**
+
+
