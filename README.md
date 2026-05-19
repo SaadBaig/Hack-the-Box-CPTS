@@ -9,7 +9,7 @@ Two hackers working toward the **Hack The Box Certified Penetration Testing Spec
 | 8 | [Service Scanning](#-section-8--service-scanning) | WordPress file read exploit |
 | 9 | [Web Enumeration](#-section-9--web-enumeration) | robots.txt, source code creds |
 | 11 | [Privilege Escalation](#-section-11--privilege-escalation) | sudo lateral movement |
-| 17 | [Nibbles — Initial Foothold](#-section-17---nibbles--initial-foothold) | Nibbleblog exploitation |
+| 17 | [Nibbles — Initial Foothold](#-section-17--nibbles--initial-foothold) | Nibbleblog exploitation |
 
 ---
 
