@@ -4,20 +4,20 @@ Two hackers working toward the **Hack The Box Certified Penetration Testing Spec
 
 ## Table of Contents
 
-- [Section 1 — Service Scanning CTF](#-section-1--service-scanning-ctf)
+- [Service Scanning CTF](#-service-scanning-ctf)
   - [Reconnaissance](#reconnaissance)
   - [Exploitation via Metasploit](#exploitation-via-metasploit)
-- [Section 2 — Web Enumeration CTF](#-section-2--web-enumeration-ctf)
+- [Web Enumeration CTF](#-web-enumeration-ctf)
   - [Nmap Scan](#nmap-scan)
   - [Web Server Exploration](#web-server-exploration)
   - [Discovering Hidden Pages](#discovering-hidden-pages)
   - [Source Code Analysis](#source-code-analysis)
-- [Section 3 — Privilege Escalation CTF](#-section-3--privilege-escalation-ctf)
+- [Privilege Escalation CTF](#-privilege-escalation-ctf)
   - [Reconnaissance](#reconnaissance-1)
   - [Initial Access](#initial-access)
   - [Privilege Enumeration](#privilege-enumeration)
   - [Lateral Movement](#lateral-movement)
-- [Section 4 — Nibbles CTF - initial foothold](#-section-4--nibbles-ctf---initial-foothold)
+- [Nibbles CTF - initial foothold](#-nibbles-ctf---initial-foothold)
   - [Nmap Scan](#nmap-scan-1)
   - [Web Server Exploration](#web-server-exploration-1)
   - [Nibbleblog Discovery](#nibbleblog-discovery)
@@ -33,7 +33,7 @@ Two hackers working toward the **Hack The Box Certified Penetration Testing Spec
 
 ---
 
-## 📦 Section 1 — Service Scanning CTF
+## 📦 Service Scanning CTF
 
 > **Objective:** Identify services running on the target, find public exploits, and retrieve `/flag.txt`.
 
@@ -75,7 +75,7 @@ HTB{REDACTED}
 
 ---
 
-## 🌐 Section 2 — Web Enumeration CTF
+## 🌐 Web Enumeration CTF
 
 > **Objective:** Identify services, find public exploits, and retrieve `/flag.txt`.
 
@@ -125,7 +125,7 @@ Inspecting the login page source reveals hardcoded credentials in an HTML commen
 
 ---
 
-## 🔐 Section 3 — Privilege Escalation CTF
+## 🔐 Privilege Escalation CTF
 
 > **Objective:** SSH into the server, pivot to `user2`, and retrieve `/home/user2/flag.txt`.
 
@@ -174,7 +174,7 @@ HTB{REDACTED}
 ✅ **Flag captured.**
 
 
-## 🍪 Section 4 — Nibbles CTF - initial foothold
+## 🍪 Nibbles CTF - initial foothold
 
 > **Objective:** Gain a foothold on the target and submit the `user.txt` flag.
 
