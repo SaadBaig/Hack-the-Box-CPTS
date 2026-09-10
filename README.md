@@ -4,16 +4,36 @@ Two hackers working toward the **Hack The Box Certified Penetration Testing Spec
 
 ## Table of Contents
 
-| # | Section | Topic |
-|---|---------|-------|
-| 8 | [Service Scanning](#-section-8--service-scanning) | WordPress file read exploit |
-| 9 | [Web Enumeration](#-section-9--web-enumeration) | robots.txt, source code creds |
-| 11 | [Privilege Escalation](#-section-11--privilege-escalation) | sudo lateral movement |
-| 17 | [Nibbles — Initial Foothold](#-section-17--nibbles--initial-foothold) | Nibbleblog exploitation |
+- [Section 1 — Service Scanning CTF](#-section-1--service-scanning-ctf)
+  - [Reconnaissance](#reconnaissance)
+  - [Exploitation via Metasploit](#exploitation-via-metasploit)
+- [Section 2 — Web Enumeration CTF](#-section-2--web-enumeration-ctf)
+  - [Nmap Scan](#nmap-scan)
+  - [Web Server Exploration](#web-server-exploration)
+  - [Discovering Hidden Pages](#discovering-hidden-pages)
+  - [Source Code Analysis](#source-code-analysis)
+- [Section 3 — Privilege Escalation CTF](#-section-3--privilege-escalation-ctf)
+  - [Reconnaissance](#reconnaissance-1)
+  - [Initial Access](#initial-access)
+  - [Privilege Enumeration](#privilege-enumeration)
+  - [Lateral Movement](#lateral-movement)
+- [Section 4 — Nibbles CTF - initial foothold](#-section-4--nibbles-ctf---initial-foothold)
+  - [Nmap Scan](#nmap-scan-1)
+  - [Web Server Exploration](#web-server-exploration-1)
+  - [Nibbleblog Discovery](#nibbleblog-discovery)
+  - [Directory Enumeration](#directory-enumeration)
+  - [Gobuster](#gobuster)
+  - [Nikto](#nikto)
+  - [Searchsploit](#searchsploit)
+  - [Authentication](#authentication)
+  - [Exploitation — Arbitrary File Upload (RCE)](#exploitation--arbitrary-file-upload-rce)
+  - [Reverse Shell](#reverse-shell)
+  - [User Flag](#user-flag)
+  - [Privilege Escalation](#privilege-escalation)
 
 ---
 
-## 📦 Section 8 — Service Scanning
+## 📦 Section 1 — Service Scanning CTF
 
 > **Objective:** Identify services running on the target, find public exploits, and retrieve `/flag.txt`.
 
@@ -55,7 +75,7 @@ HTB{REDACTED}
 
 ---
 
-## 🌐 Section 9 — Web Enumeration
+## 🌐 Section 2 — Web Enumeration CTF
 
 > **Objective:** Identify services, find public exploits, and retrieve `/flag.txt`.
 
@@ -105,7 +125,7 @@ Inspecting the login page source reveals hardcoded credentials in an HTML commen
 
 ---
 
-## 🔐 Section 11 — Privilege Escalation
+## 🔐 Section 3 — Privilege Escalation CTF
 
 > **Objective:** SSH into the server, pivot to `user2`, and retrieve `/home/user2/flag.txt`.
 
@@ -154,7 +174,7 @@ HTB{REDACTED}
 ✅ **Flag captured.**
 
 
-## 🍪 Section 17 — Nibbles — Initial Foothold
+## 🍪 Section 4 — Nibbles CTF - initial foothold
 
 > **Objective:** Gain a foothold on the target and submit the `user.txt` flag.
 
