@@ -4,32 +4,51 @@ Two hackers working toward the **Hack The Box Certified Penetration Testing Spec
 
 ## Table of Contents
 
-- [Service Scanning CTF](#-service-scanning-ctf)
-  - [Reconnaissance](#reconnaissance)
-  - [Exploitation via Metasploit](#exploitation-via-metasploit)
-- [Web Enumeration CTF](#-web-enumeration-ctf)
-  - [Nmap Scan](#nmap-scan)
-  - [Web Server Exploration](#web-server-exploration)
-  - [Discovering Hidden Pages](#discovering-hidden-pages)
-  - [Source Code Analysis](#source-code-analysis)
-- [Privilege Escalation CTF](#-privilege-escalation-ctf)
-  - [Reconnaissance](#reconnaissance-1)
-  - [Initial Access](#initial-access)
-  - [Privilege Enumeration](#privilege-enumeration)
-  - [Lateral Movement](#lateral-movement)
-- [Nibbles CTF - initial foothold](#-nibbles-ctf---initial-foothold)
-  - [Nmap Scan](#nmap-scan-1)
-  - [Web Server Exploration](#web-server-exploration-1)
-  - [Nibbleblog Discovery](#nibbleblog-discovery)
-  - [Directory Enumeration](#directory-enumeration)
-  - [Gobuster](#gobuster)
-  - [Nikto](#nikto)
-  - [Searchsploit](#searchsploit)
-  - [Authentication](#authentication)
-  - [Exploitation — Arbitrary File Upload (RCE)](#exploitation--arbitrary-file-upload-rce)
-  - [Reverse Shell](#reverse-shell)
-  - [User Flag](#user-flag)
-  - [Privilege Escalation](#privilege-escalation)
+<details>
+<summary><a href="#-service-scanning-ctf">Service Scanning CTF</a></summary>
+
+- [Reconnaissance](#reconnaissance)
+- [Exploitation via Metasploit](#exploitation-via-metasploit)
+
+</details>
+
+<details>
+<summary><a href="#-web-enumeration-ctf">Web Enumeration CTF</a></summary>
+
+- [Nmap Scan](#nmap-scan)
+- [Web Server Exploration](#web-server-exploration)
+- [Discovering Hidden Pages](#discovering-hidden-pages)
+- [Source Code Analysis](#source-code-analysis)
+
+</details>
+
+<details>
+<summary><a href="#-privilege-escalation-ctf">Privilege Escalation CTF</a></summary>
+
+- [Reconnaissance](#reconnaissance-1)
+- [Initial Access](#initial-access)
+- [Privilege Enumeration](#privilege-enumeration)
+- [Lateral Movement](#lateral-movement)
+
+</details>
+
+<details>
+<summary><a href="#-nibbles-ctf---initial-foothold">Nibbles CTF - initial foothold</a></summary>
+
+- [Nmap Scan](#nmap-scan-1)
+- [Web Server Exploration](#web-server-exploration-1)
+- [Nibbleblog Discovery](#nibbleblog-discovery)
+- [Directory Enumeration](#directory-enumeration)
+- [Gobuster](#gobuster)
+- [Nikto](#nikto)
+- [Searchsploit](#searchsploit)
+- [Authentication](#authentication)
+- [Exploitation — Arbitrary File Upload (RCE)](#exploitation--arbitrary-file-upload-rce)
+- [Reverse Shell](#reverse-shell)
+- [User Flag](#user-flag)
+- [Privilege Escalation](#privilege-escalation)
+
+</details>
 
 ---
 
@@ -270,11 +289,11 @@ The **Arbitrary File Upload** exploit looks promising.
 
 ### Authentication
 
-At this point I was stuck — no obvious creds. Following the module walkthrough, the login turned out to be `admin:nibbles`. Classic guess-the-password situation.
+At this point I was stuck — no obvious creds. Following the module walkthrough, the login turned out to be `admin:nibbles` at `http://10.129.123.83/nibbleblog/admin/php`. Classic guess-the-password situation.
 
 ### Exploitation — Arbitrary File Upload (RCE)
 
-The `my_image` plugin allows uploading arbitrary files. We upload a PHP webshell disguised as an image:
+The `my_image` plugin allows uploading arbitrary files. We upload a PHP webshell disguised as an `image.php` file with the following code:
 
 ```php
 <?php system('id'); ?>
